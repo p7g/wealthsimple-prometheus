@@ -39,39 +39,16 @@ lazy_static! {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "UPPERCASE")]
-enum Currency {
-    Cad,
-    Usd,
-    Eur,
-    Gbp,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-enum Status {
-    Open,
-    Closed,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-enum OwnershipType {
-    Primary,
-    Secondary,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 struct Owner<'a> {
     client_id: &'a str,
-    ownership_type: OwnershipType,
+    ownership_type: &'a str,
     account_nickname: Option<&'a str>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Amount<'a> {
     amount: &'a str,
-    currency: Currency,
+    currency: &'a str,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -81,8 +58,8 @@ struct Account<'a> {
     #[serde(rename = "type")]
     type_: &'a str,
     nickname: Option<&'a str>,
-    base_currency: Currency,
-    status: Status,
+    base_currency: &'a str,
+    status: &'a str,
     owners: Vec<Owner<'a>>,
     net_liquidation: Amount<'a>,
     gross_position: Amount<'a>,
