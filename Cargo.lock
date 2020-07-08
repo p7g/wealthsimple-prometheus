@@ -531,6 +531,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f7b90ea6c632dd06fd765d44542e234d5e63d9bb917ecd64d79778a13bd79ae"
 
 [[package]]
+name = "wealthsimple-prometheus"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "lazy_static",
+ "minreq",
+ "prometheus",
+ "rpassword",
+ "rprompt",
+ "serde",
+ "tiny_http",
+ "uuid",
+]
+
+[[package]]
 name = "web-sys"
 version = "0.3.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -580,18 +595,3 @@ name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
-
-[[package]]
-name = "wsrs"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "lazy_static",
- "minreq",
- "prometheus",
- "rpassword",
- "rprompt",
- "serde",
- "tiny_http",
- "uuid",
-]
