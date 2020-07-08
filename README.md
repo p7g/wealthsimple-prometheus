@@ -1,6 +1,6 @@
 # wealthsimple-prometheus
 
-> *Please note*: Do _not_ run this facing the internet, unless you're fine with
+> **Please note**: Do _not_ run this facing the internet, unless you're fine with
 > the whole world seeing how much money you've got in the bank.
 
 This is a pretty simple service thing that polls [Wealthsimple] for account data
