@@ -27,7 +27,7 @@ Each of these gauges is tagged with the following:
 This is only scratching the surface, though. Take a look at the [api docs] to
 see some of the other cool stuff that maybe works.
 
-[dev docs]: https://developers.wealthsimple.com/
+[api docs]: https://developers.wealthsimple.com/
 
 ## Usage
 
