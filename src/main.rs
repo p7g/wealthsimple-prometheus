@@ -129,9 +129,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             token = login(&id, &username, &password, &mut otp_claim)?;
             continue;
         } else if resp.status_code != 200 {
-            return Err(
-                format!("Request failed: {}", std::str::from_utf8(resp.as_bytes())?).into(),
-            );
+            eprintln!("Request failed: {}", std::str::from_utf8(resp.as_bytes())?);
+            std::thread::sleep(std::time::Duration::from_secs(60));
+            continue;
         }
 
         let accounts: AccountsResponse = resp.json()?;
