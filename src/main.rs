@@ -85,7 +85,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let id = uuid::Uuid::new_v4().to_simple().to_string();
     let mut otp_claim = None;
 
-    let mut token = login(&id, &username, &password, &mut otp_claim)?;
+    let (mut token, mut client_id) = login(&id, &username, &password, &mut otp_claim)?;
 
     std::thread::spawn(|| {
         let server = Server::http("0.0.0.0:8080").unwrap();
@@ -126,7 +126,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "got 401, need to log in again: {}",
                 std::str::from_utf8(resp.as_bytes())?
             );
-            token = login(&id, &username, &password, &mut otp_claim)?;
+            let result = login(&id, &username, &password, &mut otp_claim)?;
+            token = result.0;
+            client_id = result.1;
+
             continue;
         } else if resp.status_code != 200 {
             eprintln!("Request failed: {}", std::str::from_utf8(resp.as_bytes())?);
@@ -137,7 +140,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let accounts: AccountsResponse = resp.json()?;
 
         for account in accounts.results {
-            let label_values = &[account.id, account.type_, account.nickname.unwrap_or("")];
+            let nickname = account
+                .owners
+                .iter()
+                .find_map(|o| {
+                    if o.client_id == client_id {
+                        Some(o.account_nickname)
+                    } else {
+                        None
+                    }
+                })
+                .flatten()
+                .or(account.nickname);
+            let label_values = &[account.id, account.type_, nickname.unwrap_or("")];
 
             if let Ok(amount) = f64::from_str(account.total_deposits.amount) {
                 DEPOSITED.with_label_values(label_values).set(amount);
@@ -163,6 +178,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 #[derive(Deserialize)]
 struct LoginResponse<'a> {
     access_token: &'a str,
+    client_canonical_id: &'a str,
 }
 
 /**
@@ -174,7 +190,7 @@ fn login(
     username: &str,
     password: &str,
     otp_claim: &mut Option<String>,
-) -> Result<String, Box<dyn std::error::Error>> {
+) -> Result<(String, String), Box<dyn std::error::Error>> {
     let mut payload = HashMap::new();
 
     payload.insert("username", username);
@@ -215,7 +231,10 @@ fn login(
             if resp.status_code == 200 {
                 otp_claim.replace(resp.headers["x-wealthsimple-otp-claim"].clone());
                 let body: LoginResponse = resp.json()?;
-                Ok(format!("Bearer {}", body.access_token))
+                Ok((
+                    format!("Bearer {}", body.access_token),
+                    body.client_canonical_id.to_string(),
+                ))
             } else {
                 Err(format!(
                     "Failed to log in after 2fa: {}",
@@ -226,7 +245,10 @@ fn login(
         }
         200 => {
             let body: LoginResponse = resp.json()?;
-            Ok(format!("Bearer {}", body.access_token))
+            Ok((
+                format!("Bearer {}", body.access_token),
+                body.client_canonical_id.to_string(),
+            ))
         }
         _ => Err(format!(
             "Failed to log in: {:#?} {}",

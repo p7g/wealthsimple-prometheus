@@ -20,7 +20,7 @@ Each of these gauges is tagged with the following:
 
 - `account_id`: The account identifier within Wealthsimple
 - `account_type`: The type of account
-- `account_name`: The nickname of the account (this one seems to not work)
+- `account_name`: The nickname of the account
 
 [gauges]: https://prometheus.io/docs/concepts/metric_types/#gauge
 
